@@ -1,0 +1,181 @@
+---
+description: Generate individual + assessor reports (today + so-far) for each learner branch on the problem-solving-coach repo. Trigger manually with @generate-reports.
+alwaysApply: false
+---
+
+# Generate Problem-Solving Coach Reports
+
+You are generating evaluation reports for learners on the `trilogy-group/problem-solving-coach` repository. Reports must follow the **TI culture lens** below. Do not deviate from it.
+
+---
+
+## Step 1 — Fetch submissions
+
+Run this in the terminal:
+
+```bash
+bash scripts/fetch_submissions.sh
+```
+
+This will clone/pull the repo, check out each of the 7 target branches, and write one dump file per branch into `workspace/branch_dumps/{branch}.md`. Each dump contains:
+- Branch metadata (last commit timestamp, commit count, latest commit hash)
+- All files under `results/understanding-problems/` and `results/solving/` with their commit timestamps
+- A "today" section listing the files modified in the most recent commit on the branch
+
+**If the script fails**, stop and surface the error to the user. Do not fabricate report content.
+
+---
+
+## Step 2 — Read every dump
+
+For each of the 7 branches listed in `scripts/BRANCHES.txt`, read `workspace/branch_dumps/{branch}.md` in full. Do not skim. The reports are only useful if you actually engaged with the submission content.
+
+---
+
+## Step 3 — Write four reports per branch
+
+For each branch, write four markdown files into `reports/`:
+
+1. `{branch}_individual_today.md`
+2. `{branch}_individual_so_far.md`
+3. `{branch}_assessor_today.md`
+4. `{branch}_assessor_so_far.md`
+
+Use the structures below. **Every sentence must pass the "useful filter" at the bottom of this rule.** If a sentence is generic praise or filler, delete it before saving.
+
+---
+
+## Individual report structure (today and so-far)
+
+The individual report is feedback for the learner. It is feedback-heavy: tell them what they did wrong and where to improve. No warm-up, no "good job overall." Open with the verdict.
+
+Score the learner across these 8 dimensions. For each: quote evidence from their submission, name the gap, give one concrete action.
+
+### Required sections
+
+**Verdict (2-3 sentences)** — the headline. What is the single biggest gap holding this learner back?
+
+**1. Prompt articulation** — How crisply did they express intentions in their prompts? Were goals stated or implied? Quote one prompt. If vague, show how it should have been written.
+
+**2. Question specificity** — Were their questions precise enough to get useful answers, or were they broad/abstract? Quote one. Rewrite it tighter.
+
+**3. Question actionability** — Could the answers to their questions actually unblock work, or were they curiosity-questions with no downstream use?
+
+**4. Customer pain vs developmental details** — Did they think about user/customer outcomes, or did they get lost in implementation minutiae? This is the most important dimension — Customer Obsession is non-negotiable in TI.
+
+**5. Inventiveness** — Did they generate multiple approaches and pick the best, or jump on the first idea? Did they re-conceptualize the problem or just execute the brief?
+
+**6. Frugality + speed** — Did they accomplish more with less? Move fast? Or over-engineer / analysis-paralyze?
+
+**7. Delivery** — Did they ship something working end-to-end, or stop at analysis / partial implementation? Outcomes over activity.
+
+**8. Ambition (Think Big)** — Was the scope bold or safe? Did they take a hill or pick a small problem?
+
+**What to do next time (3-5 bullets)** — Concrete, specific actions. Not "be more customer-focused" — instead "Before writing any code, write a one-paragraph user story stating who the user is, what they're trying to do, and what success looks like for them."
+
+### Today vs so-far difference
+
+- **Today** = focus on the most recent commit's files (listed in the dump's "Today section")
+- **So-far** = trajectory across all submissions on the branch. Is the learner improving, plateauing, or regressing? Cite specific evidence from earlier vs later submissions.
+
+---
+
+## Assessor report structure (today and so-far)
+
+The assessor report is for the reviewer. It is pattern analysis and culture-alignment scoring. **It is not feedback for the learner** — it can be more candid.
+
+### Required sections
+
+**Snapshot (3-4 sentences)** — What kind of thinker is this learner? Single paragraph characterization.
+
+**Deep thinking patterns observed** — 3-6 patterns you noticed in *how they think*, not what they did. Each pattern: name it, quote evidence, explain what it reveals about their cognition. Examples of pattern types: "treats prompts as specs, not starting points"; "anchors on first solution and defends it"; "asks AI for validation, not disconfirmation"; "writes for completeness, not clarity"; "confuses motion with progress."
+
+**Amazon Leadership Principle alignment** — Score only the LPs where there is real evidence. Use **Strong / Mixed / Weak / Absent**. Format:
+
+| Principle | Rating | Evidence |
+|---|---|---|
+| Customer Obsession | Mixed | They mention users in their solution doc but only as a checkbox; no user workflow modeled. |
+| Invent and Simplify | Weak | First-idea bias; only one solution path explored in `results/solving/X.md`. |
+
+Do not pad the table. If you can't cite evidence for an LP, omit it.
+
+**Flaws mapped to LPs** — For each weak/absent LP, give the specific flaw and where it shows up. This is the actionable part for the assessor.
+
+**Culture-philosophy verdict** — Composite of LPs plus TI's four core values (Only The Best / Take the Hills / Customer Success Obsession / Simple, Not Complex). One of:
+- **Strong alignment** — would raise the bar
+- **Developing** — coachable, real signal, gaps are addressable
+- **Mixed** — some real strengths, some serious gaps that need targeted intervention
+- **Weak alignment** — fundamental mismatch on multiple core values
+
+Justify the verdict in 3-4 sentences. No hedging.
+
+### Today vs so-far difference
+
+- **Today** = patterns visible in the most recent submission
+- **So-far** = whether the patterns are entrenched (recurring across submissions) or one-off. Entrenched patterns are the actionable signal.
+
+---
+
+## The "useful filter" — apply to every sentence
+
+A sentence belongs in a report **only if** at least one is true:
+
+- It tells the reader something they didn't already know about themselves/the learner
+- It points to a tech, library, pattern, or technique that would optimize their approach
+- It surfaces an assumption, constraint, or failure mode they missed
+- It quantifies impact (time saved, latency cut, rework avoided)
+- It connects work to a TI principle in a way that changes future action
+
+Delete: "you did a good job", "this is well structured", "overall solid effort", "great start", any sentence that could be copy-pasted into another learner's report unchanged.
+
+---
+
+## TI Culture Lens — non-negotiable scoring backbone
+
+### Core values
+- **Only The Best** — choose the best, do the best.
+- **Take the Hills** — go after big problems, not easy ones.
+- **Customer Success Obsession** — don't stop until the customer's business is better.
+- **Simple, Not Complex** — bias toward the least complicated solution.
+
+### What TI projects really are
+Projects start as ambiguous problem statements. The submitter's job is to **transform ambiguity into clarity** — dig deeper, ask the right questions, uncover the real problem. Customers describe symptoms; submitters diagnose root causes. Build what they **need**, not what they **asked for**.
+
+When reading a submission, ask: did this person treat the prompt as a destination or a starting point?
+
+### What separates TI from "good"
+- Reduce customer workload, don't add to it
+- End-to-end ownership
+- Ship independently, no waiting for approval chains
+- Think like product owners, not instruction takers
+- Measure outcomes and impact, not hours
+
+### Leadership Principles in scope
+Customer Obsession · Ownership · Invent and Simplify · Are Right, A Lot · Learn and Be Curious · Insist on Higher Standards · Think Big · Bias for Action · Frugality · Earn Trust · Dive Deep · Have Backbone; Disagree and Commit · Deliver Results
+
+---
+
+## Step 4 — Summary
+
+After writing all 28 reports (4 per branch × 7 branches), print a summary table to chat:
+
+| Branch | Verdict | Top strength | Top gap |
+|---|---|---|---|
+
+Keep it to one line per branch.
+
+---
+
+## Branches in scope (read from `scripts/BRANCHES.txt`)
+
+```
+varnit-mittal
+ayush
+chirag
+daksh-ti
+Vrajnandak
+bharat-ti
+harsh
+```
+
+If a branch's dump is empty or missing, write a single report `{branch}_NO_SUBMISSION.md` stating that, and skip the four standard reports for that branch.
